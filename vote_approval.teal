@@ -1,36 +1,30 @@
-#pragma version 6
+#pragma version 2
 txn ApplicationID
 int 0
 ==
-bnz main_l16
+bnz main_l18
 txn OnCompletion
 int DeleteApplication
 ==
-bnz main_l15
+bnz main_l17
 txn OnCompletion
 int UpdateApplication
 ==
-bnz main_l14
+bnz main_l16
 txn OnCompletion
 int CloseOut
 ==
-bnz main_l11
+bnz main_l13
 txn OnCompletion
 int OptIn
 ==
-bnz main_l10
+bnz main_l12
 txna ApplicationArgs 0
 byte "vote"
 ==
 bnz main_l7
 err
 main_l7:
-txn Sender
-byte "AssetID"
-app_global_get
-asset_holding_get AssetBalance
-store 3
-store 2
 global Round
 byte "VoteBegin"
 app_global_get
@@ -40,35 +34,21 @@ byte "VoteEnd"
 app_global_get
 <=
 &&
-load 2
-int 1000
->=
-&&
-txna ApplicationArgs 1
-byte "yes"
-==
-txna ApplicationArgs 1
-byte "no"
-==
-||
-txna ApplicationArgs 1
-byte "abstain"
-==
-||
-&&
-assert
+bnz main_l9
+err
+main_l9:
 int 0
-int 0
+global CurrentApplicationID
 byte "voted"
 app_local_get_ex
 store 1
 store 0
 load 1
-bnz main_l9
+bnz main_l11
 txna ApplicationArgs 1
 txna ApplicationArgs 1
 app_global_get
-load 2
+int 1
 +
 app_global_put
 int 0
@@ -76,15 +56,11 @@ byte "voted"
 txna ApplicationArgs 1
 app_local_put
 int 1
-byte "votes"
-load 2
-app_local_put
-int 1
 return
-main_l9:
+main_l11:
 int 0
 return
-main_l10:
+main_l12:
 global Round
 byte "RegBegin"
 app_global_get
@@ -95,9 +71,9 @@ app_global_get
 <=
 &&
 return
-main_l11:
+main_l13:
 int 0
-int 0
+global CurrentApplicationID
 byte "voted"
 app_local_get_ex
 store 1
@@ -108,40 +84,40 @@ app_global_get
 <=
 load 1
 &&
-bnz main_l13
-main_l12:
+bnz main_l15
+main_l14:
 int 1
 return
-main_l13:
+main_l15:
 load 0
 load 0
 app_global_get
-txn Sender
-byte "votes"
-app_local_get
+int 1
 -
 app_global_put
-b main_l12
-main_l14:
-txn Sender
-byte "Creator"
-app_global_get
-==
-return
-main_l15:
-txn Sender
-byte "Creator"
-app_global_get
-==
-return
+b main_l14
 main_l16:
+txn Sender
+byte "Creator"
+app_global_get
+==
+return
+main_l17:
+txn Sender
+byte "Creator"
+app_global_get
+==
+return
+main_l18:
 byte "Creator"
 txn Sender
 app_global_put
 txn NumAppArgs
-int 5
+int 4
 ==
-assert
+bnz main_l20
+err
+main_l20:
 byte "RegBegin"
 txna ApplicationArgs 0
 btoi
@@ -156,10 +132,6 @@ btoi
 app_global_put
 byte "VoteEnd"
 txna ApplicationArgs 3
-btoi
-app_global_put
-byte "AssetID"
-txna ApplicationArgs 4
 btoi
 app_global_put
 int 1

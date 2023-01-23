@@ -1,4 +1,4 @@
-#pragma version 6
+#pragma version 2
 int 0
 global CurrentApplicationID
 byte "voted"
@@ -15,9 +15,7 @@ bz main_l2
 load 0
 load 0
 app_global_get
-txn Sender
-byte "votes"
-app_local_get
+int 1
 -
 app_global_put
 main_l2:

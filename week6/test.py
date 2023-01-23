@@ -197,8 +197,12 @@ class TestContract(unittest.TestCase):
     def test_7_delete_app(self):
         # delete application
         delete_app(TestContract.algod_client,TestContract.new_acct_priv_key,TestContract.app_index)
+        app_info = TestContract.algod_indexer.applications(application_id=TestContract.app_index,include_all=True)
+        self.assertTrue(app_info['application']['deleted'])
         # clear application from user account
         clear_app(TestContract.algod_client,TestContract.user_acct_priv_key,TestContract.app_index)
+        account_info = TestContract.algod_indexer.lookup_account_application_local_state(address=TestContract.user_acct_addr,application_id=TestContract.app_index)
+        self.assertEqual(account_info['apps-local-states'], [])
 
 def tearDownClass(self) -> None:
     return super().tearDown()

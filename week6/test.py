@@ -161,15 +161,17 @@ class TestContract(unittest.TestCase):
         call_app(TestContract.algod_client, TestContract.user_acct_priv_key, TestContract.app_index, [b"vote", b"yes"],[TestContract.user_acct_addr],[TestContract.asset_id])
 
         # read local state of application from user account
-        read_local_state(TestContract.algod_client,TestContract.user_acct_addr,TestContract.app_index)
-        
-        self.assertEqual(read_local_state['voted'],'yes')
+        #read_local_state(TestContract.algod_client,TestContract.user_acct_addr,TestContract.app_index)
+        local_state = read_local_state(TestContract.algod_client,TestContract.user_acct_addr,TestContract.app_index)
+        #print('Local_state: ',local_state)
+        self.assertEqual(local_state['voted'],'yes')
+        # wait for registration period to start
+        wait_for_round(TestContract.algod_client,global_state['VoteEnd'])
         
 
     #Test winning vote
     def test_6_winner(self):
-        # wait for registration period to start
-        wait_for_round(TestContract.algod_client,global_state['VoteEnd'])
+        
         global_state = read_global_state(TestContract.algod_client, TestContract.new_acct_addr, TestContract.app_index)
 
         max_votes = 0
